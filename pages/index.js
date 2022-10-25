@@ -261,57 +261,109 @@ export default function Home({ client }) {
 }
 
 export async function getServerSideProps(context) {
+  //   const odooObject = {
+  //     host: "https://noa-ignite.odoo.com/",
+  //     // port: 8069 /* Defaults to 80 if not specified */,
+  //     port: 8069 /* Defaults to 80 if not specified */,
+  //     database: "noa-ignite",
+  //     username:
+  //       "henrik.sissener@noaignite.com" /* Optional if using a stored session_id */,
+  //     password:
+  //       "6ad0d8621d1e2e31df12f4612c606995449f312e" /* Optional if using a stored session_id */,
+  //     // session_id: "YOUR_SESSION_ID" /* Optional if using username/password */,
+  //     // context: "Your_Context" /* Optional Like Change Language */,
+  //   };
+
+  //   var body = JSON.stringify({
+  //     jsonrpc: "2.0",
+  //     method: "call",
+  //     id: 1,
+  //     params: {
+  //       db: odooObject.database,
+  //       login: odooObject.username,
+  //       password: odooObject.password,
+  //       method: "version",
+  //       service: "common",
+  //       args: [
+  //         odooObject.database,
+  //         odooObject.username,
+  //         odooObject.password,
+  //         "version",
+  //         "common",
+  //       ],
+  //     },
+  //   });
+
+  //   const client = new JSONRPCClient((jsonRPCRequest) =>
+  //     fetch("https://noa-ignite.odoo.com/jsonrpc", {
+  //       method: "POST",
+  //       headers: {
+  //         "content-type": "application/json",
+  //         Accept: "application/json",
+  //         // "X-Requested-With": "XMLHttpRequest",
+  //         // "Access-Control-Allow-Origin": "*",
+  //       },
+  //       body: jsonRPCRequest,
+  //     }).then((response) => {
+  //       if (response.status === 200) {
+  //         // Use client.receive when you received a JSON-RPC response.
+  //         return response.json().then((jsonRPCResponse) => {
+  //           console.log("jsonRPCResponse", jsonRPCResponse);
+
+  //           client.receive(jsonRPCResponse);
+  //         });
+  //       } else if (jsonRPCRequest.id !== undefined) {
+  //         return Promise.reject(new Error(response.statusText));
+  //       }
+  //     })
+  //   );
+
+  //   client
+  //     .request(body)
+  //     .then((res) => console.log(res))
+  //     .catch((err) => console.log(err));
+
+  //   // console.log(client);
+
+  //   return {
+  //     props: {
+  //       // client,
+  //     },
+  //   };
+  // }
+
   const odooObject = {
     host: "https://noa-ignite.odoo.com/",
-    // port: 8069 /* Defaults to 80 if not specified */,
-    port: 8069 /* Defaults to 80 if not specified */,
     database: "noa-ignite",
     username:
-      "henrik.sissener@noaignite.com" /* Optional if using a stored session_id */,
+      "oyvind.bratvedt@noaignite.com" /* Optional if using a stored session_id */,
     password:
-      "6ad0d8621d1e2e31df12f4612c606995449f312e" /* Optional if using a stored session_id */,
+      "394f4e47697b8416cb94038acdbb2527185230ce" /* Optional if using a stored session_id */,
     // session_id: "YOUR_SESSION_ID" /* Optional if using username/password */,
     // context: "Your_Context" /* Optional Like Change Language */,
   };
 
-  var body = JSON.stringify({
-    jsonrpc: "2.0",
-    method: "call",
-    id: 1,
-    params: {
-      db: odooObject.database,
-      login: odooObject.username,
-      password: odooObject.password,
-      method: "version",
-      service: "common",
-      args: [
-        odooObject.database,
-        odooObject.username,
-        odooObject.password,
-        "version",
-        "common",
-      ],
-    },
-  });
+  var body = {
+    service: "common",
+    method: "version",
+    // args: [odooObject.database, odooObject.username, odooObject.password],
+    args: [],
+  };
 
   const client = new JSONRPCClient((jsonRPCRequest) =>
     fetch("https://noa-ignite.odoo.com/jsonrpc", {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        Accept: "application/json",
-        // "X-Requested-With": "XMLHttpRequest",
-        // "Access-Control-Allow-Origin": "*",
       },
-      body: jsonRPCRequest,
+      body: JSON.stringify(jsonRPCRequest),
     }).then((response) => {
       if (response.status === 200) {
+        console.log(response);
         // Use client.receive when you received a JSON-RPC response.
-        return response.json().then((jsonRPCResponse) => {
-          console.log("jsonRPCResponse", jsonRPCResponse);
-
-          client.receive(jsonRPCResponse);
-        });
+        return response
+          .json()
+          .then((jsonRPCResponse) => client.receive(jsonRPCResponse));
       } else if (jsonRPCRequest.id !== undefined) {
         return Promise.reject(new Error(response.statusText));
       }
@@ -319,11 +371,9 @@ export async function getServerSideProps(context) {
   );
 
   client
-    .request(body)
+    .request("call", body)
     .then((res) => console.log(res))
     .catch((err) => console.log(err));
-
-  // console.log(client);
 
   return {
     props: {
